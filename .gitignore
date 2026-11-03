@@ -1,0 +1,23 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+# Node / Vite
+node_modules/
+dist/
+*.local
+
+# Segredos e configuração local
+appsettings.*.local.json
+.env
+.env.*
+*.pfx
+
+# Sistema operacional e editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
