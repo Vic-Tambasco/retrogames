@@ -13,10 +13,11 @@ Este arquivo orienta qualquer assistente de IA usado neste repositório. O Retro
 ## 2. Referências, em ordem de prioridade
 
 1. Especificação técnica **RetroGames — Arquitetura e Stack** (documento fornecido pelo professor).
-2. Guia da aula atual (seção "Requisitos" da etapa em andamento).
+2. Roteiro da aula atual (passos e itens "Confira" da etapa em andamento).
 3. `docs/MER.md` e `docs/USER_STORIES.md` deste repositório.
-4. Convenções do código existente.
-5. Boas práticas das tecnologias da stack.
+4. Documento **Fundamentos teóricos**, para explicar conceitos.
+5. Convenções do código existente.
+6. Boas práticas das tecnologias da stack.
 
 Se duas referências se contradizem, aponte o conflito e pergunte ao estudante qual seguir. Não escolha uma interpretação sem avisar.
 
@@ -35,15 +36,24 @@ Se duas referências se contradizem, aponte o conflito e pergunte ao estudante q
 | Service | Regras de negócio, transações, composição de dados com LINQ, `BusinessRuleException` | Conhecer HTTP ou SQL |
 | Repository | SQL parametrizado e mapeamento coluna → propriedade | Decidir regras, abrir transações |
 
+### Nomes
+
+- Uma classe por tabela em cada camada, com o nome da tabela sem o prefixo `tb_`: `tb_condicao_jogo` → `CondicaoJogo` (modelo), `ICondicaoJogoRepository`/`CondicaoJogoRepository`, `ICondicaoJogoService`/`CondicaoJogoService`, `CondicaoJogoController` (rota `/api/CondicaoJogo`).
+- Não crie classes genéricas que agrupem várias tabelas (por exemplo, um "TabelaTipoRepository").
+- ApiModels seguem, sempre que possível, o padrão `{Ação}{Entidade}{Request|Response}ApiModel`, por exemplo `InserirPlataformaRequestApiModel`.
+- Propriedades (Model, ServiceModels e ApiModels) não repetem o nome da classe: `Plataforma.Id` e `Plataforma.Nome`, nunca `PlataformaId` ou `PlataformaNome`. A chave primária é sempre `Id`; a chave estrangeira é `Id` + nome da classe referenciada (`Jogo.IdPlataforma`). O nome de outra entidade só aparece quando o dado vem dela (`NomePlataforma` em um ApiModel de jogo).
+- Propriedade de texto obrigatória começa com `string.Empty`.
+
 ### Banco de dados
 
 - O banco guarda só a estrutura: PK, FK com comportamento padrão, tipos, `NOT NULL` e `UNIQUE`.
 - Não use trigger, function, `CHECK`, `ON DELETE CASCADE` ou `ON DELETE SET NULL`.
 - Nomes seguem a convenção `tb_`, `co_seq_`, `co_`, `no_`, `ds_`, `nu_`, `vl_`, `qt_`, `dt_`, `st_`.
-- Mudanças de estrutura entram em um novo script numerado em `database/`.
+- Mudanças de estrutura entram em um novo script SQL guardado no repositório. Um script já executado não é alterado.
 
 ### Repository
 
+- Um Repository por tabela (veja "Nomes").
 - Todo valor entra como parâmetro (`@nome`). Nunca concatene valores no SQL.
 - Cada consulta lê uma única tabela: sem `JOIN` e sem subconsulta em outra tabela.
 - Filtros, ordenação e paginação (`LIMIT`/`OFFSET`) ficam no SQL.
@@ -81,11 +91,12 @@ using (var transactionScope = new TransactionScope(TransactionScopeOption.Requir
 
 - Toda resposta usa o envelope `{ "responseCode", "data", "errorMessage" }`.
 - Códigos em `ResponseCodes.cs`, sequenciais: `SUCESSO = 0`, `ERRO = 1` e, a partir de 2, tuplas `(Code, DefaultMessage)`. Código novo recebe o próximo número livre.
-- Status HTTP: 200, 201, 204, 400, 401, 403, 404, 409, 500, conforme a especificação.
+- Status HTTP: 200, 201, 400, 401, 403, 404, 409 e 500. Exclusões respondem 200 com o envelope; a API não usa 204.
 
 ### Segurança
 
-- Connection string e senha do administrador inicial ficam em `dotnet user-secrets`. Nunca escreva credenciais em arquivo versionado, nem em exemplos.
+- No curso, por simplicidade, a aplicação acessa o MySQL com o usuário local do estudante (por exemplo, `root`). Em sistemas reais, ela usaria um usuário próprio, só com as permissões necessárias.
+- Connection string e senha do administrador inicial ficam no arquivo `.env`, na raiz do repositório, que está no `.gitignore` (como no Node): `ConnectionStrings__Default`, `AdminInicial__Email` e `AdminInicial__Senha`. O modelo versionado é o `.env.example`, só com `SUA_SENHA` no lugar das senhas. A API carrega o `.env` com o pacote DotNetEnv. Os `appsettings*.json` são versionados e nunca têm senha. Não use `dotnet user-secrets`. Nunca escreva credenciais em arquivo versionado, nem em exemplos.
 - Senhas são guardadas apenas como hash (`PasswordHasher`).
 - Sessão por cookie com proteção CSRF; não guarde token no `localStorage`.
 - `bin/`, `obj/`, `node_modules/` e `dist/` não são versionados.
