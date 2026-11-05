@@ -13,7 +13,7 @@ dist/
 # Segredos e configuração local
 appsettings.*.local.json
 .env
-.env.*
+# env.*
 *.pfx
 
 # Sistema operacional e editor
