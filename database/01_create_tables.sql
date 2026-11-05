@@ -1,6 +1,3 @@
--- Criação do banco de dados (execute esta linha separadamente no Workbench antes de rodar o resto)
-CREATE DATABASE IF NOT EXISTS retrogames CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE retrogames;
 
 -- 1. Tabelas de Domínio (Chaves Fixas, sem AUTO_INCREMENT)
 CREATE TABLE tb_condicao_jogo (

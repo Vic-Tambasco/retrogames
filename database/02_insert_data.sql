@@ -1,5 +1,3 @@
-USE retrogames;
-
 -- 1. Condições (Chaves Fixas)
 INSERT INTO tb_condicao_jogo (co_condicao_jogo, ds_condicao_jogo) VALUES
 (1, 'Novo'),
