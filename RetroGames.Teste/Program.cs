@@ -3,7 +3,7 @@ using RetroGames.Repository;
 using RetroGames.Repository.Interfaces;
 
 // ATENÇÃO: Troque SUA_SENHA pela senha do seu MySQL!
-var connectionString = "server=localhost;port=3306;database=retrogames;user=root;password=SUA_SENHA";
+var connectionString = "server=localhost;port=3306;database=retrogames;user=root;password=2025108030";
 
 var config = new RepositoryConfig(connectionString);
 IRepositorySet repo = new RepositorySet(config);
