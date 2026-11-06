@@ -1,4 +1,4 @@
-using RetroGames.Repository.Models; 
+using RetroGames.Model.Model; 
 
 namespace RetroGames.Repository.Interfaces;
 

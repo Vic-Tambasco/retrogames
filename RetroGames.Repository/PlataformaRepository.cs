@@ -1,6 +1,6 @@
 using MySqlConnector;
 using RetroGames.Repository.Interfaces;
-using RetroGames.Repository.Models;
+using RetroGames.Model.Model;
 
 namespace RetroGames.Repository;
 
@@ -70,7 +70,7 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         
         AdicionarParametro(comando, "@nome", plataforma.Nome);
         AdicionarParametro(comando, "@fabricante", plataforma.Fabricante);
-        AdicionarParametro(comando, "@ano", plataforma.AnoLancamento);
+        AdicionarParametro(comando, "@ano", plataforma.AnoDeLancamento);
 
         // Certifique-se de que este método ExecutarGravacaoAsync foi o nome que você deu na Etapa 1
         await ExecutarGravacaoAsync(comando); 
@@ -88,7 +88,7 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         
         AdicionarParametro(comando, "@nome", plataforma.Nome);
         AdicionarParametro(comando, "@fabricante", plataforma.Fabricante);
-        AdicionarParametro(comando, "@ano", plataforma.AnoLancamento);
+        AdicionarParametro(comando, "@ano", plataforma.AnoDeLancamento);
         AdicionarParametro(comando, "@id", plataforma.Id);
 
         await ExecutarGravacaoAsync(comando);
@@ -111,6 +111,6 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         Id = leitor.GetInt32("co_seq_plataforma"),
         Nome = leitor.GetString("no_plataforma"),
         Fabricante = leitor.GetString("ds_fabricante"), // Coluna correta do seu banco
-        AnoLancamento = leitor.GetInt32("nu_ano_lancamento")
+        AnoDeLancamento = leitor.GetInt32("nu_ano_lancamento")
     };
 }
