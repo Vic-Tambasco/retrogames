@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using RetroGames.Model.Model;
-using RetroGames.Repositories; // Ajuste o namespace conforme o seu projeto da Aula 2
+using RetroGames.Repository.Interfaces;
+using RetroGames.Repository;
 
 namespace RetroGames.Services;
 
