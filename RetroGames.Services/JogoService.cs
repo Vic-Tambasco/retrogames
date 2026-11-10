@@ -18,7 +18,6 @@ public class JogoService : IJogoService
 
     public async Task<(IEnumerable<JogoDetalheServiceModel> Items, int Total)> ListarAsync(JogoFiltro filtro)
     {
-        // Passando os 6 parâmetros exatos do seu IJogoRepository
         var resultado = await _repository.Jogo.ListarAsync(
             filtro.Nome, 
             filtro.PlataformaId, 
@@ -62,7 +61,6 @@ public class JogoService : IJogoService
         {
             jogo.Id = await _repository.Jogo.InserirAsync(jogo);
 
-            // Usando a assinatura que o seu Repository possui
             if (idsGeneros.Any())
             {
                 await _repository.JogoGenero.InserirAsync(jogo.Id, idsGeneros.ToList());
@@ -96,15 +94,8 @@ public class JogoService : IJogoService
         {
             await _repository.Jogo.AlterarAsync(jogo);
 
-            // Como não temos o método ExcluirPorJogoAsync, precisamos ver como seu repositório limpa.
-            // Se você tiver um método ExcluirPorJogoAsync, use-o. 
-            // Caso contrário, essa chamada abaixo pode falhar. Vou assumir que você tem um método ExcluirAsync(int idJogo)
-            // Se o seu JogoGeneroRepository tiver ExcluirAsync(int idJogo, List<int> generos), use ele.
-            
-            // NOTA: Se seu IJogoGeneroRepository tiver apenas o InserirAsync(int, List<int>), 
-            // você provavelmente tem um método para deletar (ex: ExcluirPorJogoAsync).
-            // Se o build reclamar aqui, me avise qual método de exclusão você tem no JogoGeneroRepository.
-            await _repository.JogoGenero.ExcluirPorJogoAsync(jogo.Id); 
+            // Remove os vínculos antigos usando o método exato do seu repositório
+            await _repository.JogoGenero.RemoverPorJogoAsync(jogo.Id);
 
             if (idsGeneros.Any())
             {
@@ -134,12 +125,12 @@ public class JogoService : IJogoService
         if (!listaJogos.Any()) return new List<JogoDetalheServiceModel>();
 
         var plataformas = await _repository.Plataforma.ListarAsync();
-        var condicoes = await _repository.CondicaoJogo.ListarAsync(); // Usando Listar em vez de BuscarPorId
-        var todosGeneros = await _repository.Genero.ListarAsync(); // Usando Listar em vez de ListarTodos
+        var condicoes = await _repository.CondicaoJogo.ListarAsync(); 
+        var todosGeneros = await _repository.Genero.ListarAsync(); 
         
-        var todosVinculos = await _repository.JogoGenero.ListarAsync();
-        var idsJogosDaPagina = listaJogos.Select(j => j.Id).ToHashSet();
-        var vinculosDaPagina = todosVinculos.Where(v => idsJogosDaPagina.Contains(v.IdJogo)).ToList();
+        // Busca os vínculos de forma otimizada usando o método exato do seu repositório
+        var idsJogos = listaJogos.Select(j => j.Id).ToList();
+        var vinculosDaPagina = await _repository.JogoGenero.ListarPorJogosAsync(idsJogos);
 
         var detalhes = from jogo in listaJogos
                        join plataforma in plataformas on jogo.IdPlataforma equals plataforma.Id
@@ -160,7 +151,6 @@ public class JogoService : IJogoService
 
     private async Task ValidarReferenciasAsync(Jogo jogo, IEnumerable<int> idsGeneros)
     {
-        // Para validar a condição sem o BuscarPorIdAsync, buscamos a lista e verificamos com LINQ
         var condicoes = await _repository.CondicaoJogo.ListarAsync();
         if (!condicoes.Any(c => c.Id == jogo.IdCondicaoJogo))
             throw new BusinessRuleException(BusinessErrors.CONDICAO_NAO_ENCONTRADA);
