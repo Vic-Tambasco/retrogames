@@ -16,6 +16,6 @@ public class GeneroService : IGeneroService
 
     public async Task<IEnumerable<Genero>> ListarAsync()
     {
-        return await _repository.Genero.ListarTodosAsync();
+        return await _repository.Genero.ListarAsync(); // Corrigido aqui
     }
 }

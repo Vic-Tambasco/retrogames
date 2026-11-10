@@ -18,24 +18,17 @@ public class JogoService : IJogoService
 
     public async Task<(IEnumerable<JogoDetalheServiceModel> Items, int Total)> ListarAsync(JogoFiltro filtro)
     {
-        // 1. Se o filtro tiver gênero, descobre quais jogos têm esse gênero
-        if (filtro.IdGenero.HasValue)
-        {
-            var vinculos = await _repository.JogoGenero.ListarPorGeneroAsync(filtro.IdGenero.Value);
-            filtro.IdsJogosFiltrados = vinculos.Select(v => v.IdJogo).ToList();
-            
-            if (!filtro.IdsJogosFiltrados.Any())
-            {
-                return (new List<JogoDetalheServiceModel>(), 0);
-            }
-        }
-
-        // 2. Busca a página de jogos no Repository (com paginação no SQL)
-        var resultado = await _repository.Jogo.ListarAsync(filtro);
+        // Passando os 6 parâmetros exatos do seu IJogoRepository
+        var resultado = await _repository.Jogo.ListarAsync(
+            filtro.Nome, 
+            filtro.PlataformaId, 
+            filtro.GeneroIds, 
+            filtro.IncluirInativos,
+            filtro.Pagina, 
+            filtro.TamanhoPagina
+        );
         
-        // 3. Monta o detalhe com LINQ (número fixo de consultas)
-        var detalhes = await MontarDetalhesAsync(resultado.Items);
-        
+        var detalhes = await MontarDetalhesAsync(resultado.Jogos);
         return (detalhes, resultado.Total);
     }
 
@@ -54,9 +47,8 @@ public class JogoService : IJogoService
     public async Task<Jogo> InserirAsync(Jogo jogo, IEnumerable<int> idsGeneros)
     {
         jogo.Nome = jogo.Nome.Trim();
-        jogo.Ativo = true; // RN03: jogo novo entra ativo
+        jogo.Ativo = true; 
 
-        // RN05: Valida referências antes de gravar
         await ValidarReferenciasAsync(jogo, idsGeneros);
 
         var transactionOptions = new TransactionOptions
@@ -68,17 +60,15 @@ public class JogoService : IJogoService
         using (var transactionScope = new TransactionScope(TransactionScopeOption.Required,
                    transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
         {
-            // Grava o jogo
             jogo.Id = await _repository.Jogo.InserirAsync(jogo);
 
-            // Grava os vínculos de gênero
-            foreach (var idGenero in idsGeneros)
+            // Usando a assinatura que o seu Repository possui
+            if (idsGeneros.Any())
             {
-                var vinculo = new JogoGenero { IdJogo = jogo.Id, IdGenero = idGenero };
-                await _repository.JogoGenero.InserirAsync(vinculo);
+                await _repository.JogoGenero.InserirAsync(jogo.Id, idsGeneros.ToList());
             }
 
-            transactionScope.Complete();
+            transactionScope.Complete(); 
         }
 
         return jogo;
@@ -86,7 +76,6 @@ public class JogoService : IJogoService
 
     public async Task<Jogo> AlterarAsync(Jogo jogo, IEnumerable<int> idsGeneros)
     {
-        // Verifica se o jogo existe
         var jogoExistente = await _repository.Jogo.BuscarPorIdAsync(jogo.Id);
         if (jogoExistente == null)
         {
@@ -94,8 +83,6 @@ public class JogoService : IJogoService
         }
 
         jogo.Nome = jogo.Nome.Trim();
-        
-        // RN05: Valida referências
         await ValidarReferenciasAsync(jogo, idsGeneros);
 
         var transactionOptions = new TransactionOptions
@@ -107,17 +94,21 @@ public class JogoService : IJogoService
         using (var transactionScope = new TransactionScope(TransactionScopeOption.Required,
                    transactionOptions, TransactionScopeAsyncFlowOption.Enabled))
         {
-            // Altera o jogo
             await _repository.Jogo.AlterarAsync(jogo);
 
-            // Remove vínculos antigos
-            await _repository.JogoGenero.ExcluirPorJogoAsync(jogo.Id);
+            // Como não temos o método ExcluirPorJogoAsync, precisamos ver como seu repositório limpa.
+            // Se você tiver um método ExcluirPorJogoAsync, use-o. 
+            // Caso contrário, essa chamada abaixo pode falhar. Vou assumir que você tem um método ExcluirAsync(int idJogo)
+            // Se o seu JogoGeneroRepository tiver ExcluirAsync(int idJogo, List<int> generos), use ele.
+            
+            // NOTA: Se seu IJogoGeneroRepository tiver apenas o InserirAsync(int, List<int>), 
+            // você provavelmente tem um método para deletar (ex: ExcluirPorJogoAsync).
+            // Se o build reclamar aqui, me avise qual método de exclusão você tem no JogoGeneroRepository.
+            await _repository.JogoGenero.ExcluirPorJogoAsync(jogo.Id); 
 
-            // Grava novos vínculos
-            foreach (var idGenero in idsGeneros)
+            if (idsGeneros.Any())
             {
-                var vinculo = new JogoGenero { IdJogo = jogo.Id, IdGenero = idGenero };
-                await _repository.JogoGenero.InserirAsync(vinculo);
+                await _repository.JogoGenero.InserirAsync(jogo.Id, idsGeneros.ToList());
             }
 
             transactionScope.Complete();
@@ -134,28 +125,22 @@ public class JogoService : IJogoService
             throw new BusinessRuleException(BusinessErrors.JOGO_NAO_ENCONTRADO);
         }
 
-        // RN03: Jogo não é apagado, apenas desativado (st_ativo = 0)
-        jogo.Ativo = false;
-        await _repository.Jogo.AlterarAsync(jogo);
+        await _repository.Jogo.DesativarAsync(id);
     }
-
-    // --- Métodos Privados de Apoio ---
 
     private async Task<IEnumerable<JogoDetalheServiceModel>> MontarDetalhesAsync(IEnumerable<Jogo> jogos)
     {
         var listaJogos = jogos.ToList();
         if (!listaJogos.Any()) return new List<JogoDetalheServiceModel>();
 
-        // Consultas fixas (independente do tamanho da lista)
         var plataformas = await _repository.Plataforma.ListarAsync();
-        var condicoes = await _repository.CondicaoJogo.ListarAsync();
-        var todosGeneros = await _repository.Genero.ListarTodosAsync();
+        var condicoes = await _repository.CondicaoJogo.ListarAsync(); // Usando Listar em vez de BuscarPorId
+        var todosGeneros = await _repository.Genero.ListarAsync(); // Usando Listar em vez de ListarTodos
         
-        // Para os gêneros, precisamos buscar os vínculos apenas dos jogos da lista
-        var idsJogos = listaJogos.Select(j => j.Id).ToList();
-        var vinculosGeneros = await _repository.JogoGenero.ListarPorJogosAsync(idsJogos);
+        var todosVinculos = await _repository.JogoGenero.ListarAsync();
+        var idsJogosDaPagina = listaJogos.Select(j => j.Id).ToHashSet();
+        var vinculosDaPagina = todosVinculos.Where(v => idsJogosDaPagina.Contains(v.IdJogo)).ToList();
 
-        // Montagem com LINQ em memória
         var detalhes = from jogo in listaJogos
                        join plataforma in plataformas on jogo.IdPlataforma equals plataforma.Id
                        join condicao in condicoes on jogo.IdCondicaoJogo equals condicao.Id
@@ -164,7 +149,7 @@ public class JogoService : IJogoService
                            Jogo = jogo,
                            NomePlataforma = plataforma.Nome,
                            DescricaoCondicao = condicao.Descricao,
-                           Generos = (from vinculo in vinculosGeneros
+                           Generos = (from vinculo in vinculosDaPagina
                                       where vinculo.IdJogo == jogo.Id
                                       join genero in todosGeneros on vinculo.IdGenero equals genero.Id
                                       select genero).ToList()
@@ -175,30 +160,22 @@ public class JogoService : IJogoService
 
     private async Task ValidarReferenciasAsync(Jogo jogo, IEnumerable<int> idsGeneros)
     {
-        // RN05: Valida se a plataforma existe
+        // Para validar a condição sem o BuscarPorIdAsync, buscamos a lista e verificamos com LINQ
+        var condicoes = await _repository.CondicaoJogo.ListarAsync();
+        if (!condicoes.Any(c => c.Id == jogo.IdCondicaoJogo))
+            throw new BusinessRuleException(BusinessErrors.CONDICAO_NAO_ENCONTRADA);
+
         var plataforma = await _repository.Plataforma.BuscarPorIdAsync(jogo.IdPlataforma);
         if (plataforma == null)
-        {
             throw new BusinessRuleException(BusinessErrors.PLATAFORMA_NAO_ENCONTRADA);
-        }
 
-        // RN05: Valida se a condição existe
-        var condicao = await _repository.CondicaoJogo.BuscarPorIdAsync(jogo.IdCondicaoJogo);
-        if (condicao == null)
-        {
-            throw new BusinessRuleException(BusinessErrors.CONDICAO_NAO_ENCONTRADA);
-        }
-
-        // RN05: Valida se todos os gêneros existem
-        var todosGeneros = await _repository.Genero.ListarTodosAsync();
+        var todosGeneros = await _repository.Genero.ListarAsync();
         var generosValidos = todosGeneros.Select(g => g.Id).ToHashSet();
         
         foreach (var idGenero in idsGeneros)
         {
             if (!generosValidos.Contains(idGenero))
-            {
                 throw new BusinessRuleException(BusinessErrors.GENERO_NAO_ENCONTRADO);
-            }
         }
     }
 }
