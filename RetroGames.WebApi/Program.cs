@@ -1,12 +1,11 @@
 using DotNetEnv;
 using RetroGames.WebApi.Configuration;
+using RetroGames.WebApi.Middlewares; 
 
-// 1. Carrega o arquivo .env da raiz do repositório
 Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// 2. Lê a connection string
 var connectionString = builder.Configuration.GetConnectionString("Default");
 if (string.IsNullOrWhiteSpace(connectionString))
 {
@@ -16,15 +15,20 @@ if (string.IsNullOrWhiteSpace(connectionString))
     return;
 }
 
-// 3. Registra as dependências
 builder.Services.AddRepositorios(connectionString);
 builder.Services.AddServicosDeNegocio();
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
+
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+builder.Services.AddProblemDetails();
+
 var app = builder.Build();
 
-// 4. Pipeline HTTP
+
+app.UseExceptionHandler();
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
