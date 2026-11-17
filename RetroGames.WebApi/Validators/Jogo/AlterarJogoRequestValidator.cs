@@ -18,8 +18,7 @@ public class AlterarJogoRequestValidator : AbstractValidator<AlterarJogoRequestA
             .InclusiveBetween(1970, 2100).WithMessage("Ano de lançamento inválido.");
         
         RuleFor(x => x.Preco)
-            .GreaterThan(0).WithMessage("O preço deve ser maior que zero.")
-            .ScalePrecision(2, 10).WithMessage("O preço deve ter no máximo 2 casas decimais.");
+            .GreaterThan(0).WithMessage("O preço deve ser maior que zero.");
         
         RuleFor(x => x.Estoque)
             .GreaterThanOrEqualTo(0).WithMessage("O estoque não pode ser negativo.");
