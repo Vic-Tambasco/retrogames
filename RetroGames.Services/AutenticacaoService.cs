@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using RetroGames.Model.Model;
 using RetroGames.Repository.Interfaces;
+using RetroGames.Model.Constantes;
 
 namespace RetroGames.Services;
 
@@ -39,7 +40,7 @@ public class AutenticacaoService : IAutenticacaoService
         {
             Nome = "Administrador",
             Email = email,
-            IdPerfil = 1 // Assumindo que 1 é Administrador
+            IdPerfil = Perfis.Administrador 
         };
 
         // A mágica da segurança acontece aqui: gera o hash!

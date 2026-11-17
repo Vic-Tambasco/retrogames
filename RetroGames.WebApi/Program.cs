@@ -23,7 +23,6 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddRepositorios(connectionString);
 builder.Services.AddServicosDeNegocio();
 
-// Novas configurações da Aula 5
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 builder.Services.AddControllers(options =>
@@ -45,9 +44,11 @@ builder.Services.AddProblemDetails();
 
 builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<RetroGames.Model.Model.Usuario>, Microsoft.AspNetCore.Identity.PasswordHasher<RetroGames.Model.Model.Usuario>>();
 builder.Services.AddScoped<IAutenticacaoService, AutenticacaoService>();
-
+builder.Services.AddConfiguracaoAutenticacao();
+builder.Services.AddHttpContextAccessor(); 
 var app = builder.Build();
 
+app.UseExceptionHandler();
 using (var scope = app.Services.CreateScope())
 {
     var authService = scope.ServiceProvider.GetRequiredService<IAutenticacaoService>();
@@ -59,8 +60,9 @@ using (var scope = app.Services.CreateScope())
         await authService.GarantirAdministradorInicialAsync(adminEmail, adminSenha);
     }
 }
+app.UseAuthentication();
+app.UseAuthorization();
 
-app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
