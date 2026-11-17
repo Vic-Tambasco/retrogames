@@ -42,7 +42,22 @@ builder.Services.AddOpenApi();
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
+builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<RetroGames.Model.Model.Usuario>, Microsoft.AspNetCore.Identity.PasswordHasher<RetroGames.Model.Model.Usuario>>();
+builder.Services.AddScoped<IAutenticacaoService, AutenticacaoService>();
+
 var app = builder.Build();
+
+using (var scope = app.Services.CreateScope())
+{
+    var authService = scope.ServiceProvider.GetRequiredService<IAutenticacaoService>();
+    var adminEmail = builder.Configuration["AdminInicial:Email"];
+    var adminSenha = builder.Configuration["AdminInicial:Senha"];
+    
+    if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminSenha))
+    {
+        await authService.GarantirAdministradorInicialAsync(adminEmail, adminSenha);
+    }
+}
 
 app.UseExceptionHandler();
 
