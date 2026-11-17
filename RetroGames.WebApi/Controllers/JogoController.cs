@@ -43,4 +43,36 @@ public class JogoController : ControllerBase
         
         return Ok(new RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>(jogo.ParaDetalheResponse()));
     }
+        [HttpPost]
+    public async Task<ActionResult<RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>>> Inserir(InserirJogoRequestApiModel request)
+    {
+        var jogo = await _jogoService.InserirAsync(request.ParaModel(), request.IdsGeneros);
+        
+        // O Service altera o ID no objeto 'jogo', mas para devolver os detalhes completos, buscamos ele de novo
+        var detalhe = await _jogoService.BuscarPorIdAsync(jogo.Id);
+
+        return CreatedAtAction(
+            nameof(ListarPorId), 
+            new { id = detalhe.Jogo.Id }, 
+            new RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>(detalhe.ParaDetalheResponse())
+        );
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>>> Alterar(int id, AlterarJogoRequestApiModel request)
+    {
+        var jogo = await _jogoService.AlterarAsync(request.ParaModel(id), request.IdsGeneros);
+        
+        var detalhe = await _jogoService.BuscarPorIdAsync(jogo.Id);
+
+        return Ok(new RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>(detalhe.ParaDetalheResponse()));
+    }
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult<RetroGamesResponseApiModel<object>>> Excluir(int id)
+    {
+        await _jogoService.DesativarAsync(id);
+        
+        return Ok(new RetroGamesResponseApiModel<object>(new { id }));
+    }
 }

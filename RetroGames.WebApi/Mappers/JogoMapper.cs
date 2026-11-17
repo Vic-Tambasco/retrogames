@@ -1,3 +1,4 @@
+using RetroGames.Model.Model;
 using RetroGames.Services;
 using RetroGames.WebApi.ApiModels;
 
@@ -11,7 +12,6 @@ public static class JogoMapper
         {
             Nome = request.Busca,
             PlataformaId = request.IdPlataforma,
-            // Se o seu filtro usar uma lista de generos, passamos uma lista com o id (se existir)
             GeneroIds = request.IdGenero.HasValue ? new List<int> { request.IdGenero.Value } : new List<int>(),
             IncluirInativos = false, // Regra da Aula 4: listagem só mostra ativos
             Pagina = request.Pagina,
@@ -51,6 +51,37 @@ public static class JogoMapper
             IdCondicaoJogo = detalhe.Jogo.IdCondicaoJogo,
             DescricaoCondicao = detalhe.DescricaoCondicao,
             Generos = detalhe.Generos.Select(g => new GeneroJogoApiModel { Id = g.Id, Nome = g.Nome }).ToList()
+        };
+    }
+
+    public static Jogo ParaModel(this InserirJogoRequestApiModel request)
+    {
+        return new Jogo
+        {
+            Nome = request.Nome,
+            Descricao = string.IsNullOrWhiteSpace(request.Descricao) ? null : request.Descricao,
+            AnoDeLancamento = request.AnoDeLancamento,
+            Preco = request.Preco,
+            Estoque = request.Estoque,
+            IdPlataforma = request.IdPlataforma,
+            IdCondicaoJogo = request.IdCondicaoJogo,
+            Ativo = true // RN03: Inclusão sempre nasce ativa
+        };
+    }
+
+    public static Jogo ParaModel(this AlterarJogoRequestApiModel request, int id)
+    {
+        return new Jogo
+        {
+            Id = id,
+            Nome = request.Nome,
+            Descricao = string.IsNullOrWhiteSpace(request.Descricao) ? null : request.Descricao,
+            AnoDeLancamento = request.AnoDeLancamento,
+            Preco = request.Preco,
+            Estoque = request.Estoque,
+            IdPlataforma = request.IdPlataforma,
+            IdCondicaoJogo = request.IdCondicaoJogo,
+            Ativo = request.Ativo
         };
     }
 }
