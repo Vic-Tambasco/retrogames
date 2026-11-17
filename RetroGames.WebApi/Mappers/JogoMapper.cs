@@ -84,4 +84,16 @@ public static class JogoMapper
             Ativo = request.Ativo
         };
     }
+        public static JogoFiltro ParaFiltro(this ListarJogoRequestApiModel request)
+    {
+        return new JogoFiltro
+        {
+            Nome = request.Busca,
+            PlataformaId = request.IdPlataforma,
+            GeneroIds = request.IdGenero.HasValue ? new List<int> { request.IdGenero.Value } : new List<int>(),
+            IncluirInativos = request.IncluirInativos, // <-- ADICIONE ESTA LINHA
+            Pagina = request.Pagina,
+            TamanhoPagina = request.TamanhoPagina
+        };
+    }
 }
