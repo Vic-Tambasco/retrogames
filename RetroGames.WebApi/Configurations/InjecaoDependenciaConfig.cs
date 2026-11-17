@@ -3,7 +3,7 @@ using RetroGames.Repository;
 using RetroGames.Repository.Interfaces;
 using RetroGames.Services;
 
-namespace RetroGames.WebApi.Configuration;
+namespace RetroGames.WebApi.Configurations;
 
 public static class InjecaoDependenciaConfig
 {

@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.Cookies;
+using RetroGames.WebApi.ApiModels; 
 
-namespace RetroGames.WebApi.Configuration;
+namespace RetroGames.WebApi.Configurations;
 
 public static class AutenticacaoConfig
 {

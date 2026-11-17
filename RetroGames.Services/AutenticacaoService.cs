@@ -3,6 +3,7 @@ using RetroGames.Model.Model;
 using RetroGames.Repository.Interfaces;
 using RetroGames.Model.Constantes;
 
+
 namespace RetroGames.Services;
 
 public class AutenticacaoService : IAutenticacaoService
@@ -40,7 +41,7 @@ public class AutenticacaoService : IAutenticacaoService
         {
             Nome = "Administrador",
             Email = email,
-            IdPerfil = Perfis.Administrador 
+            IdPerfil = PerfilIds.Administrador
         };
 
         // A mágica da segurança acontece aqui: gera o hash!

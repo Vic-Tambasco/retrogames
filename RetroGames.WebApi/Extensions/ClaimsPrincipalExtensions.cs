@@ -15,8 +15,8 @@ public static class ClaimsPrincipalExtensions
             new Claim(ClaimTypes.Email, usuario.Email)
         };
 
-        // Usa a constante Perfis.Administrador
-        if (usuario.IdPerfil == Perfis.Administrador) 
+    
+        if (usuario.IdPerfil == PerfilIds.Administrador) 
         {
             claims.Add(new Claim(ClaimTypes.Role, "Administrador"));
         }

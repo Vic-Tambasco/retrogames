@@ -3,7 +3,7 @@ using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.WebApi.ActionFilters;
 using RetroGames.WebApi.ApiModels;
-using RetroGames.WebApi.Configuration;
+using RetroGames.WebApi.Configurations;
 using RetroGames.WebApi.Middlewares;
 using RetroGames.Services;
 
