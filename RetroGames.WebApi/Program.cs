@@ -5,6 +5,7 @@ using RetroGames.WebApi.ActionFilters;
 using RetroGames.WebApi.ApiModels;
 using RetroGames.WebApi.Configuration;
 using RetroGames.WebApi.Middlewares;
+using RetroGames.Services;
 
 Env.TraversePath().Load();
 
