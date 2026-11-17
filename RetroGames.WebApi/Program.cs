@@ -46,6 +46,10 @@ builder.Services.AddScoped<Microsoft.AspNetCore.Identity.IPasswordHasher<RetroGa
 builder.Services.AddScoped<IAutenticacaoService, AutenticacaoService>();
 builder.Services.AddConfiguracaoAutenticacao();
 builder.Services.AddHttpContextAccessor(); 
+
+builder.Services.AddConfiguracaoAutorizacao();
+builder.Services.AddScoped<IUsuarioAtualService, RetroGames.WebApi.Services.UsuarioAtualService>();
+
 var app = builder.Build();
 
 app.UseExceptionHandler();

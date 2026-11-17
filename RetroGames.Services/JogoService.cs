@@ -10,14 +10,19 @@ namespace RetroGames.Services;
 public class JogoService : IJogoService
 {
     private readonly IRepositorySet _repository;
+     private readonly IUsuarioAtualService _usuarioAtual;
 
-    public JogoService(IRepositorySet repository)
+        public JogoService(IRepositorySet repository, IUsuarioAtualService usuarioAtual)
     {
         _repository = repository;
+        _usuarioAtual = usuarioAtual;
     }
-
     public async Task<(IEnumerable<JogoDetalheServiceModel> Items, int Total)> ListarAsync(JogoFiltro filtro)
     {
+        if (!_usuarioAtual.EhAdministrador())
+    {
+        filtro.IncluirInativos = false;
+    }
         var resultado = await _repository.Jogo.ListarAsync(
             filtro.Nome, 
             filtro.PlataformaId, 
@@ -25,6 +30,7 @@ public class JogoService : IJogoService
             filtro.IncluirInativos,
             filtro.Pagina, 
             filtro.TamanhoPagina
+            
         );
         
         var detalhes = await MontarDetalhesAsync(resultado.Jogos);
