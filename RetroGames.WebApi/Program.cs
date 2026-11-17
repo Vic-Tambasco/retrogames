@@ -53,30 +53,20 @@ builder.Services.AddScoped<IUsuarioAtualService, RetroGames.WebApi.Services.Usua
 var app = builder.Build();
 
 app.UseExceptionHandler();
-using (var scope = app.Services.CreateScope())
-{
-    var authService = scope.ServiceProvider.GetRequiredService<IAutenticacaoService>();
-    var adminEmail = builder.Configuration["AdminInicial:Email"];
-    var adminSenha = builder.Configuration["AdminInicial:Senha"];
-    
-    if (!string.IsNullOrWhiteSpace(adminEmail) && !string.IsNullOrWhiteSpace(adminSenha))
-    {
-        await authService.GarantirAdministradorInicialAsync(adminEmail, adminSenha);
-    }
-}
-app.UseAuthentication();
-app.UseAuthorization();
 
-
+// O SWAGGER PRECISA VIR ANTES DO USE AUTHENTICATION E USE AUTHORIZATION
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
+    app.MapOpenApi().AllowAnonymous(); // Libera o JSON
     app.UseSwaggerUI(options =>
     {
         options.SwaggerEndpoint("/openapi/v1.json", "RetroGames API");
     });
 }
 
-app.MapControllers();
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.MapControllers(); // Mapeia os controllers depois da segurança
 
 app.Run();

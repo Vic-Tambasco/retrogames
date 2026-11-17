@@ -2,11 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using RetroGames.Services;
 using RetroGames.WebApi.ApiModels;
 using RetroGames.WebApi.Mappers;
+using Microsoft.AspNetCore.Authorization;
 
 namespace RetroGames.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[AllowAnonymous]
 public class JogoController : ControllerBase
 {
     private readonly IJogoService _jogoService;
@@ -44,6 +46,7 @@ public class JogoController : ControllerBase
         return Ok(new RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>(jogo.ParaDetalheResponse()));
     }
         [HttpPost]
+        
     public async Task<ActionResult<RetroGamesResponseApiModel<ListarPorIdJogoResponseApiModel>>> Inserir(InserirJogoRequestApiModel request)
     {
         var jogo = await _jogoService.InserirAsync(request.ParaModel(), request.IdsGeneros);

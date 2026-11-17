@@ -6,19 +6,6 @@ namespace RetroGames.WebApi.Mappers;
 
 public static class JogoMapper
 {
-    public static JogoFiltro ParaFiltro(this ListarJogoRequestApiModel request)
-    {
-        return new JogoFiltro
-        {
-            Nome = request.Busca,
-            PlataformaId = request.IdPlataforma,
-            GeneroIds = request.IdGenero.HasValue ? new List<int> { request.IdGenero.Value } : new List<int>(),
-            IncluirInativos = false, // Regra da Aula 4: listagem só mostra ativos
-            Pagina = request.Pagina,
-            TamanhoPagina = request.TamanhoPagina
-        };
-    }
-
     public static ListarJogoResponseApiModel ParaListarResponse(this JogoDetalheServiceModel detalhe)
     {
         return new ListarJogoResponseApiModel
@@ -91,7 +78,7 @@ public static class JogoMapper
             Nome = request.Busca,
             PlataformaId = request.IdPlataforma,
             GeneroIds = request.IdGenero.HasValue ? new List<int> { request.IdGenero.Value } : new List<int>(),
-            IncluirInativos = request.IncluirInativos, // <-- ADICIONE ESTA LINHA
+            IncluirInativos = request.IncluirInativos,
             Pagina = request.Pagina,
             TamanhoPagina = request.TamanhoPagina
         };

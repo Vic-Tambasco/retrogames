@@ -8,12 +8,12 @@ public static class AutorizacaoConfig
     {
         services.AddAuthorization(options =>
         {
-            // Política padrão: exige usuário logado (aplica em tudo que não tiver [AllowAnonymous])
+            // A política padrão exige login em tudo...
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();
 
-            // Política de Administrador: exige o perfil de Administrador
+            // Política de Administrador
             options.AddPolicy("SomenteAdministrador", policy =>
                 policy.RequireRole("Administrador"));
         });
