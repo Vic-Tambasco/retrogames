@@ -1,6 +1,7 @@
 using MySqlConnector;
 using RetroGames.Model.Model;
 using RetroGames.Repository.Interfaces;
+using RetroGames.Model.Constantes;
 
 namespace RetroGames.Repository;
 
@@ -39,10 +40,10 @@ public class UsuarioRepository : RepositoryBase, IUsuarioRepository
     public async Task<bool> ExisteAdministradorAsync()
     {
         using var conexao = await AbrirConexaoAsync();
-        // Assumindo que o IdPerfil 1 é Administrador
-        var sql = "SELECT COUNT(1) FROM tb_usuario WHERE co_perfil = 1"; 
+        var sql = "SELECT COUNT(1) FROM tb_usuario WHERE co_perfil = @perfil";
         using var comando = new MySqlCommand(sql, conexao);
-        
+        comando.Parameters.AddWithValue("@perfil", PerfilIds.Administrador);
+
         var count = Convert.ToInt32(await comando.ExecuteScalarAsync());
         return count > 0;
     }

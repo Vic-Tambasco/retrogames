@@ -52,6 +52,22 @@ builder.Services.AddScoped<IUsuarioAtualService, RetroGames.WebApi.Services.Usua
 
 var app = builder.Build();
 
+using (var escopo = app.Services.CreateScope())
+{
+    var emailAdmin = builder.Configuration["AdminInicial:Email"];
+    var senhaAdmin = builder.Configuration["AdminInicial:Senha"];
+
+    if (!string.IsNullOrWhiteSpace(emailAdmin) && !string.IsNullOrWhiteSpace(senhaAdmin))
+    {
+        var autenticacao = escopo.ServiceProvider.GetRequiredService<IAutenticacaoService>();
+        await autenticacao.GarantirAdministradorInicialAsync(emailAdmin, senhaAdmin);
+    }
+    else
+    {
+        app.Logger.LogWarning("AdminInicial__Email/AdminInicial__Senha não configurados no .env.");
+    }
+}
+
 app.UseExceptionHandler();
 
 // O SWAGGER PRECISA VIR ANTES DO USE AUTHENTICATION E USE AUTHORIZATION

@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using RetroGames.Services;
+using RetroGames.Model.Constantes;
 
 namespace RetroGames.WebApi.Services;
 
@@ -25,6 +26,6 @@ public class UsuarioAtualService : IUsuarioAtualService
 
     public bool EhAdministrador()
     {
-        return _httpContextAccessor.HttpContext?.User.IsInRole("Administrador") ?? false;
+        return _httpContextAccessor.HttpContext?.User.IsInRole(Perfis.Administrador) ?? false;
     }
 }

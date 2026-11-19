@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
+using RetroGames.Model.Constantes;
 
 namespace RetroGames.WebApi.Configurations;
 
@@ -8,14 +9,12 @@ public static class AutorizacaoConfig
     {
         services.AddAuthorization(options =>
         {
-            // A política padrão exige login em tudo...
             options.FallbackPolicy = new AuthorizationPolicyBuilder()
                 .RequireAuthenticatedUser()
                 .Build();
 
-            // Política de Administrador
-            options.AddPolicy("SomenteAdministrador", policy =>
-                policy.RequireRole("Administrador"));
+            options.AddPolicy(Politicas.Administrador, policy =>
+                policy.RequireRole(Perfis.Administrador));
         });
     }
 }

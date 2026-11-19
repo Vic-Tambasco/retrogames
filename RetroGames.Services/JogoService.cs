@@ -40,11 +40,11 @@ public class JogoService : IJogoService
     public async Task<JogoDetalheServiceModel> BuscarPorIdAsync(int id)
     {
         var jogo = await _repository.Jogo.BuscarPorIdAsync(id);
-        if (jogo == null)
+        if (jogo == null || (!jogo.Ativo && !_usuarioAtual.EhAdministrador()))
         {
             throw new BusinessRuleException(BusinessErrors.JOGO_NAO_ENCONTRADO);
         }
-
+        
         var detalhes = await MontarDetalhesAsync(new[] { jogo });
         return detalhes.First();
     }

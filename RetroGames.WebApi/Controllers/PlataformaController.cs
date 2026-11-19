@@ -3,12 +3,12 @@ using RetroGames.Services;
 using RetroGames.WebApi.ApiModels;
 using RetroGames.WebApi.Mappers;
 using Microsoft.AspNetCore.Authorization;
+using RetroGames.WebApi.Configurations;
 
 namespace RetroGames.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
 public class PlataformaController : ControllerBase
 {
     private readonly IPlataformaService _plataformaService;
@@ -19,6 +19,7 @@ public class PlataformaController : ControllerBase
     }
 
     // ... (mantenha as actions GET Listar e ListarPorId que já existem) ...
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<RetroGamesResponseApiModel<IEnumerable<ListarPlataformaResponseApiModel>>>> Listar()
     {
@@ -26,7 +27,7 @@ public class PlataformaController : ControllerBase
         var response = plataformas.Select(p => p.ParaResponse()).ToList();
         return Ok(new RetroGamesResponseApiModel<IEnumerable<ListarPlataformaResponseApiModel>>(response));
     }
-
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<ActionResult<RetroGamesResponseApiModel<ListarPlataformaResponseApiModel>>> ListarPorId(int id)
     {
@@ -34,7 +35,8 @@ public class PlataformaController : ControllerBase
         return Ok(new RetroGamesResponseApiModel<ListarPlataformaResponseApiModel>(plataforma.ParaResponse()));
     }
 
-    // --- Novas actions da Aula 5 ---
+    
+    [Authorize(Policy = Politicas.Administrador)]
     [HttpPost]
     public async Task<ActionResult<RetroGamesResponseApiModel<ListarPlataformaResponseApiModel>>> Inserir(InserirPlataformaRequestApiModel request)
     {
@@ -46,7 +48,7 @@ public class PlataformaController : ControllerBase
             new RetroGamesResponseApiModel<ListarPlataformaResponseApiModel>(criada.ParaResponse())
         );
     }
-
+    [Authorize(Policy = Politicas.Administrador)]
     [HttpPut("{id:int}")]
     public async Task<ActionResult<RetroGamesResponseApiModel<ListarPlataformaResponseApiModel>>> Alterar(int id, AlterarPlataformaRequestApiModel request)
     {
@@ -54,7 +56,7 @@ public class PlataformaController : ControllerBase
         
         return Ok(new RetroGamesResponseApiModel<ListarPlataformaResponseApiModel>(alterada.ParaResponse()));
     }
-
+    [Authorize(Policy = Politicas.Administrador)]
     [HttpDelete("{id:int}")]
     public async Task<ActionResult<RetroGamesResponseApiModel<object>>> Excluir(int id)
     {

@@ -60,15 +60,13 @@ public class AutenticacaoController : ControllerBase
         var nome = User.Identity?.Name;
         var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value;
         
-        // Assumindo que 1 é Administrador, como vimos na sua classe PerfilIds
-        var idPerfil = User.IsInRole("Administrador") ? 1 : 2; 
-
+        
         var response = new UsuarioLogadoResponseApiModel
         {
             Id = usuarioId,
             Nome = nome ?? string.Empty,
             Email = email ?? string.Empty,
-            IdPerfil = idPerfil
+            IdPerfil = User.ObterPerfilId()
         };
 
         return Ok(new RetroGamesResponseApiModel<UsuarioLogadoResponseApiModel>(response));

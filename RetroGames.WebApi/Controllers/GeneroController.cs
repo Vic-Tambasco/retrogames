@@ -8,7 +8,7 @@ namespace RetroGames.WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-[AllowAnonymous]
+
 public class GeneroController : ControllerBase
 {
     private readonly IGeneroService _generoService;
@@ -17,7 +17,7 @@ public class GeneroController : ControllerBase
     {
         _generoService = generoService;
     }
-
+    [AllowAnonymous]
     [HttpGet]
     public async Task<ActionResult<RetroGamesResponseApiModel<IEnumerable<ListarGeneroResponseApiModel>>>> Listar()
     {
