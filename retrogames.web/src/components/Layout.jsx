@@ -1,0 +1,33 @@
+import { Link, Outlet } from 'react-router-dom';
+
+export default function Layout() {
+  return (
+    <div className="d-flex flex-column min-vh-100">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container">
+          <Link className="navbar-brand" to="/">RetroGames</Link>
+          <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="menu">
+            <ul className="navbar-nav me-auto">
+              <li className="nav-item">
+                <Link className="nav-link" to="/">Catálogo</Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+
+      <main className="flex-grow-1 py-4">
+        <Outlet /> {/* Onde as páginas serão renderizadas */}
+      </main>
+
+      <footer className="bg-dark text-light text-center py-3 mt-auto">
+        <div className="container">
+          <small>&copy; 2026 RetroGames. Todos os direitos reservados.</small>
+        </div>
+      </footer>
+    </div>
+  );
+}
