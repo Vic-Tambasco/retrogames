@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import Catalogo from './pages/Catalogo/Catalogo';
 import DetalheJogo from './pages/Catalogo/DetalheJogo';
 import NaoEncontrada from './pages/NaoEncontrada';
+import Login from './pages/Login/Login'; // <-- Importa a tela de Login
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
       <Route path="/" element={<Layout />}>
         <Route index element={<Catalogo />} />
         <Route path="jogos/:id" element={<DetalheJogo />} />
+        <Route path="login" element={<Login />} /> {/* <-- Adiciona a rota /login */}
         <Route path="*" element={<NaoEncontrada />} />
       </Route>
     </Routes>
