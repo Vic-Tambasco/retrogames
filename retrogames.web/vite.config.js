@@ -9,7 +9,8 @@ export default defineConfig({
       '/api': {
         target: 'http://localhost:5080',
         changeOrigin: true,
-      }
-    }
-  }
+        cookieDomainRewrite: "localhost" // <-- MÁGICA AQUI: Reescreve o domínio do cookie
+      },
+    },
+  },
 })

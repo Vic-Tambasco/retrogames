@@ -32,3 +32,18 @@ export const condicaoJogoApi = {
     return resposta.data.data;
   },
 };
+
+export const autenticacaoApi = {
+  entrar: async (email, senha) => {
+    const resposta = await api.post('/Autenticacao/login', { email, senha });
+    return resposta.data.data;
+  },
+  sair: async () => {
+    const resposta = await api.post('/Autenticacao/logout');
+    return resposta.data;
+  },
+  usuarioAtual: async () => {
+    const resposta = await api.get('/Autenticacao/eu');
+    return resposta.data.data;
+  }
+};

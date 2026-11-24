@@ -1,6 +1,9 @@
 import { Link, Outlet } from 'react-router-dom';
+import { useAutenticacao } from '../hooks/useAutenticacao'; // <-- Adicione esta linha
 
 export default function Layout() {
+  const { usuario, carregando } = useAutenticacao(); // <-- Adicione esta linha
+
   return (
     <div className="d-flex flex-column min-vh-100">
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -15,12 +18,18 @@ export default function Layout() {
                 <Link className="nav-link" to="/">Catálogo</Link>
               </li>
             </ul>
+            
+            {/* TESTE TEMPORÁRIO: Mostra o nome ou "Visitante" */}
+            <span className="navbar-text text-white">
+              {carregando ? 'Carregando...' : (usuario ? `Olá, ${usuario.nome}` : 'Visitante')}
+            </span>
+
           </div>
         </div>
       </nav>
 
       <main className="flex-grow-1 py-4">
-        <Outlet /> {/* Onde as páginas serão renderizadas */}
+        <Outlet />
       </main>
 
       <footer className="bg-dark text-light text-center py-3 mt-auto">
