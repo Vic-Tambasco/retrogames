@@ -11,3 +11,12 @@ export function obterMensagemErro(erro) {
   
   return "Ocorreu um erro inesperado.";
 }
+
+export function obterErrosDosCampos(erro) {
+  const envelope = erro.response?.data;
+  // Se for erro de validação (código 3), a API devolve os campos em 'data'
+  if (envelope && envelope.responseCode === 3 && envelope.data) {
+    return envelope.data;
+  }
+  return {};
+}

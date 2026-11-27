@@ -10,12 +10,36 @@ export const jogoApi = {
     const resposta = await api.get(`/Jogo/${id}`);
     return resposta.data.data;
   },
+    inserir: async (dados) => {
+    const resposta = await api.post('/Jogo', dados);
+    return resposta.data.data;
+  },
+  alterar: async (id, dados) => {
+    const resposta = await api.put(`/Jogo/${id}`, dados);
+    return resposta.data.data;
+  },
+  desativar: async (id) => {
+    const resposta = await api.delete(`/Jogo/${id}`);
+    return resposta.data;
+  },
 };
 
 export const plataformaApi = {
   listar: async () => {
     const resposta = await api.get('/Plataforma');
     return resposta.data.data;
+  },
+    inserir: async (dados) => {
+    const resposta = await api.post('/Plataforma', dados);
+    return resposta.data.data;
+  },
+  alterar: async (id, dados) => {
+    const resposta = await api.put(`/Plataforma/${id}`, dados);
+    return resposta.data.data;
+  },
+  excluir: async (id) => {
+    const resposta = await api.delete(`/Plataforma/${id}`);
+    return resposta.data;
   },
 };
 
