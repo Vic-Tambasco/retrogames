@@ -31,4 +31,23 @@ public static class BusinessErrors
     // 106 - 409: E-mail já cadastrado (Desafio)
     public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) EMAIL_JA_CADASTRADO = 
         (106, "Já existe uma conta com este e-mail.", HttpStatusCode.Conflict);
+    // 109 - 404: Pedido não encontrado
+    public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) PEDIDO_NAO_ENCONTRADO =
+        (109, "Pedido não encontrado.", HttpStatusCode.NotFound);
+
+    // 110 - 400: Jogo indisponível (inativo ou não existe)
+    public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) JOGO_INDISPONIVEL =
+        (110, "Um ou mais jogos não estão disponíveis para venda.", HttpStatusCode.BadRequest);
+
+    // 111 - 409: Estoque insuficiente
+    public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) ESTOQUE_INSUFICIENTE =
+        (111, "Estoque insuficiente.", HttpStatusCode.Conflict);
+
+    // 112 - 400: Pedido sem itens
+    public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) PEDIDO_SEM_ITENS =
+        (112, "O pedido deve conter ao menos um item.", HttpStatusCode.BadRequest);
+
+    // 113 - 400: Quantidade inválida no pedido
+    public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) QUANTIDADE_PEDIDO_INVALIDA =
+        (113, "A quantidade de cada item deve estar entre 1 e 10.", HttpStatusCode.BadRequest);
 }

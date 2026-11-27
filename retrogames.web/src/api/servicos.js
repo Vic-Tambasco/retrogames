@@ -74,3 +74,10 @@ export const autenticacaoApi = {
     return resposta.data.data;
   }
 };
+
+export const pedidoApi = {
+  finalizar: async (itens) => {
+    const resposta = await api.post('/Pedido', { itens });
+    return resposta.data.data;
+  }
+};

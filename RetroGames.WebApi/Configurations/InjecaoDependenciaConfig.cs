@@ -26,6 +26,7 @@ public static class InjecaoDependenciaConfig
         services.AddScoped<IGeneroService, GeneroService>();
         services.AddScoped<ICondicaoJogoService, CondicaoJogoService>();
         services.AddScoped<IJogoService, JogoService>();
+        services.AddScoped<IPedidoService, PedidoService>();
 
         return services;
     }

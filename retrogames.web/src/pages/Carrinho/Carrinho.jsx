@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { obterCarrinho, removerDoCarrinho, alterarQuantidade } from '../../lib/carrinho';
+import { obterCarrinho, removerDoCarrinho, alterarQuantidade, limparCarrinho } from '../../lib/carrinho';
 import { formatarPreco } from '../../lib/formato';
+import { pedidoApi } from '../../api/servicos'; // <-- Importe a API do pedido
+import { obterMensagemErro } from '../../api/erros'; // <-- Importe para tratar erros
 
 export default function Carrinho() {
   const [itens, setItens] = useState([]);
+  const [finalizando, setFinalizando] = useState(false); // <-- Estado para o botão
   const navigate = useNavigate();
 
   const carregarCarrinho = () => {
@@ -23,6 +26,26 @@ export default function Carrinho() {
   const handleRemover = (id) => {
     removerDoCarrinho(id);
     carregarCarrinho();
+  };
+
+  // Função para finalizar a compra
+  const handleFinalizar = async () => {
+    setFinalizando(true);
+    try {
+      // Prepara os dados no formato que a API espera
+      const itensParaEnviar = itens.map(i => ({ idJogo: i.id, quantidade: i.quantidade }));
+
+      await pedidoApi.finalizar(itensParaEnviar);
+
+      limparCarrinho(); // Limpa o carrinho
+      alert("Compra realizada com sucesso!");
+      navigate('/meus-pedidos'); // Redireciona para os pedidos
+
+    } catch (falha) {
+      alert(obterMensagemErro(falha)); // Mostra erro (ex: Estoque insuficiente)
+    } finally {
+      setFinalizando(false);
+    }
   };
 
   const total = itens.reduce((acc, item) => acc + (item.preco * item.quantidade), 0);
@@ -91,11 +114,14 @@ export default function Carrinho() {
                 <span>Total:</span>
                 <strong className="fs-5 text-success">{formatarPreco(total)}</strong>
               </div>
+
+              {/* BOTÃO ATUALIZADO */}
               <button 
                 className="btn btn-success w-100" 
-                onClick={() => navigate('/finalizar-compra')}
+                onClick={handleFinalizar}
+                disabled={finalizando}
               >
-                Finalizar Compra
+                {finalizando ? 'Finalizando...' : 'Finalizar Compra'}
               </button>
             </div>
           </div>
