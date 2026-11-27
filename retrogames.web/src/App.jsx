@@ -8,6 +8,8 @@ import Login from './pages/Login/Login';
 import Jogos from './pages/Administracao/Jogos'; 
 import Plataforma from './pages/Auxiliares/Plataforma'; 
 import FormularioJogo from './pages/Administracao/FormularioJogo';
+import Cadastro from './pages/Cadastro/Cadastro';
+
 
 function App() {
   return (
@@ -16,6 +18,7 @@ function App() {
         <Route index element={<Catalogo />} />
         <Route path="jogos/:id" element={<DetalheJogo />} />
         <Route path="login" element={<Login />} />
+        <Route path="cadastro" element={<Cadastro />} /> 
         
         {/* Grupo de rotas protegidas exclusivamente para Administrador */}
         <Route element={<RotaProtegida somenteAdministrador={true} />}>

@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { useAutenticacao } from '../../hooks/useAutenticacao';
 import { obterMensagemErro } from '../../api/erros';
 
+
 export default function Login() {
   const { entrar } = useAutenticacao();
   const navigate = useNavigate();
@@ -64,6 +65,9 @@ export default function Login() {
               {enviando ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
+            <div className="mt-3 text-center">
+            <small>Não tem conta? <Link to="/cadastro">Cadastre-se</Link></small>
+          </div>
         </div>
       </div>
     </div>

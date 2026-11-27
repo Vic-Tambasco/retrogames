@@ -32,6 +32,32 @@ public class AutenticacaoService : IAutenticacaoService
         return usuario;
     }
 
+    public async Task<Usuario> CadastrarClienteAsync(string nome, string email, string senha)
+    {
+        // 1. Verifica se o e-mail já existe
+        var usuarioExistente = await _repository.Usuario.BuscarPorEmailAsync(email);
+        if (usuarioExistente != null)
+        {
+            throw new BusinessRuleException(BusinessErrors.EMAIL_JA_CADASTRADO);
+        }
+
+        // 2. Cria o novo usuário com perfil 2 (Cliente)
+        var novoUsuario = new Usuario
+        {
+            Nome = nome,
+            Email = email,
+            IdPerfil = PerfilIds.Cliente // Usando a constante que já existe no seu projeto
+        };
+
+        // 3. Gera o hash da senha
+        novoUsuario.SenhaHash = _passwordHasher.HashPassword(novoUsuario, senha);
+
+        // 4. Salva no banco
+        novoUsuario.Id = await _repository.Usuario.InserirAsync(novoUsuario);
+
+        return novoUsuario;
+    }
+
     public async Task GarantirAdministradorInicialAsync(string email, string senha)
     {
         if (await _repository.Usuario.ExisteAdministradorAsync())

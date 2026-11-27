@@ -71,4 +71,27 @@ public class AutenticacaoController : ControllerBase
 
         return Ok(new RetroGamesResponseApiModel<UsuarioLogadoResponseApiModel>(response));
     }
+
+    [HttpPost("cadastrar")]
+    [AllowAnonymous] // Rota pública
+    public async Task<ActionResult<RetroGamesResponseApiModel<UsuarioLogadoResponseApiModel>>> Cadastrar(CadastrarClienteRequestApiModel request)
+    {
+        // 1. Chama o Service para cadastrar
+        var usuario = await _autenticacaoService.CadastrarClienteAsync(request.Nome, request.Email, request.Senha);
+
+        // 2. Faz o login automático (gera o cookie)
+        var claimsPrincipal = usuario.ParaClaimsPrincipal();
+        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, claimsPrincipal);
+
+        // 3. Devolve os dados do usuário logado
+        var response = new UsuarioLogadoResponseApiModel
+        {
+            Id = usuario.Id,
+            Nome = usuario.Nome,
+            Email = usuario.Email,
+            IdPerfil = usuario.IdPerfil
+        };
+
+        return Ok(new RetroGamesResponseApiModel<UsuarioLogadoResponseApiModel>(response));
+    }
 }

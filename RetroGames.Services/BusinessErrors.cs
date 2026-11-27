@@ -27,4 +27,8 @@ public static class BusinessErrors
     // 105 - 404: Gênero do jogo não existe (RN05)
     public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) GENERO_NAO_ENCONTRADO = 
         (105, "Gênero não encontrado.", HttpStatusCode.NotFound);
+
+    // 106 - 409: E-mail já cadastrado (Desafio)
+    public static readonly (int Code, string DefaultMessage, HttpStatusCode Status) EMAIL_JA_CADASTRADO = 
+        (106, "Já existe uma conta com este e-mail.", HttpStatusCode.Conflict);
 }

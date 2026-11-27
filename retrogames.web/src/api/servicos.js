@@ -23,7 +23,6 @@ export const jogoApi = {
     return resposta.data;
   },
 };
-
 export const plataformaApi = {
   listar: async () => {
     const resposta = await api.get('/Plataforma');
@@ -60,6 +59,10 @@ export const condicaoJogoApi = {
 export const autenticacaoApi = {
   entrar: async (email, senha) => {
     const resposta = await api.post('/Autenticacao/login', { email, senha });
+    return resposta.data.data;
+  },
+    cadastrar: async (nome, email, senha) => {
+    const resposta = await api.post('/Autenticacao/cadastrar', { nome, email, senha });
     return resposta.data.data;
   },
   sair: async () => {
