@@ -7,7 +7,7 @@ export default function Layout() {
 
   const handleSair = async () => {
     await sair();
-    navigate('/'); // Volta para o catálogo
+    navigate('/'); // Volta ao catálogo
   };
 
   return (
@@ -25,6 +25,20 @@ export default function Layout() {
               <li className="nav-item">
                 <Link className="nav-link" to="/">Catálogo</Link>
               </li>
+
+              {/* INÍCIO DA ALTERAÇÃO: Links para clientes logados */}
+              {estaAutenticado && (
+                <>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/carrinho">Carrinho</Link>
+                  </li>
+                  <li className="nav-item">
+                    <Link className="nav-link" to="/meus-pedidos">Meus Pedidos</Link>
+                  </li>
+                </>
+              )}
+              {/* FIM DA ALTERAÇÃO */}
+
               {/* Menu Administração só aparece para admin */}
               {ehAdministrador && (
                 <li className="nav-item dropdown">
