@@ -1,12 +1,13 @@
 import { Routes, Route } from 'react-router-dom';
 import Layout from './components/Layout';
-import RotaProtegida from './components/RotaProtegida'; // <-- Importe
+import RotaProtegida from './components/RotaProtegida';
 import Catalogo from './pages/Catalogo/Catalogo';
 import DetalheJogo from './pages/Catalogo/DetalheJogo';
 import NaoEncontrada from './pages/NaoEncontrada';
 import Login from './pages/Login/Login';
-import Jogos from './pages/Administracao/Jogos'; // <-- Importe
-import Plataforma from './pages/Auxiliares/Plataforma'; // <-- Importe
+import Jogos from './pages/Administracao/Jogos'; 
+import Plataforma from './pages/Auxiliares/Plataforma'; 
+import FormularioJogo from './pages/Administracao/FormularioJogo';
 
 function App() {
   return (
@@ -19,6 +20,8 @@ function App() {
         {/* Grupo de rotas protegidas exclusivamente para Administrador */}
         <Route element={<RotaProtegida somenteAdministrador={true} />}>
           <Route path="admin/jogos" element={<Jogos />} />
+          <Route path="admin/jogos/novo" element={<FormularioJogo />} />          
+          <Route path="admin/jogos/:id/editar" element={<FormularioJogo />} />
           <Route path="admin/plataformas" element={<Plataforma />} />
         </Route>
 
