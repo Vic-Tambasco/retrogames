@@ -9,6 +9,8 @@ import Jogos from './pages/Administracao/Jogos';
 import Plataforma from './pages/Auxiliares/Plataforma'; 
 import FormularioJogo from './pages/Administracao/FormularioJogo';
 import Cadastro from './pages/Cadastro/Cadastro';
+import Carrinho from './pages/Carrinho/Carrinho'; 
+import MeusPedidos from './pages/Pedidos/MeusPedidos';
 
 
 function App() {
@@ -19,7 +21,8 @@ function App() {
         <Route path="jogos/:id" element={<DetalheJogo />} />
         <Route path="login" element={<Login />} />
         <Route path="cadastro" element={<Cadastro />} /> 
-        
+        <Route path="carrinho" element={<Carrinho />} />
+        <Route path="meus-pedidos" element={<MeusPedidos />} />
         {/* Grupo de rotas protegidas exclusivamente para Administrador */}
         <Route element={<RotaProtegida somenteAdministrador={true} />}>
           <Route path="admin/jogos" element={<Jogos />} />
