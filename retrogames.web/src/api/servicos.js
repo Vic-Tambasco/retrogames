@@ -79,5 +79,10 @@ export const pedidoApi = {
   finalizar: async (itens) => {
     const resposta = await api.post('/Pedido', { itens });
     return resposta.data.data;
+  },
+  meusPedidos: async () => {
+    const resposta = await api.get('/Pedido/meus');
+    return resposta.data.data;
   }
 };
+

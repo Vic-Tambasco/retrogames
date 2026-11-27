@@ -16,4 +16,5 @@ public class ItemPedidoRequest
 public interface IPedidoService
 {
     Task<Pedido> FinalizarCompraAsync(int idUsuario, PedidoRequest request);
+    Task<IEnumerable<PedidoDetalheServiceModel>> ListarMeusPedidosAsync(int idUsuario);
 }

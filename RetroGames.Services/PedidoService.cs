@@ -85,4 +85,42 @@ public class PedidoService : IPedidoService
 
         return pedido;
     }
+
+    public async Task<IEnumerable<PedidoDetalheServiceModel>> ListarMeusPedidosAsync(int idUsuario)
+    {
+        var pedidos = await _repository.Pedido.ListarPorUsuarioAsync(idUsuario);
+        var situacoes = await _repository.SituacaoPedido.ListarAsync();
+        var resultado = new List<PedidoDetalheServiceModel>();
+
+        foreach (var pedido in pedidos)
+        {
+            var itens = await _repository.ItemPedido.ListarPorPedidoAsync(pedido.Id);
+            var nomesJogos = new Dictionary<int, string>();
+
+            foreach (var idJogo in itens.Select(item => item.IdJogo).Distinct())
+            {
+                var jogo = await _repository.Jogo.BuscarPorIdAsync(idJogo);
+                if (jogo != null)
+                    nomesJogos[idJogo] = jogo.Nome;
+            }
+
+            var situacao = situacoes.FirstOrDefault(s => s.Id == pedido.IdSituacaoPedido);
+
+            var detalhe = new PedidoDetalheServiceModel
+            {
+                Pedido = pedido,
+                DescricaoSituacao = situacao?.Descricao ?? "Desconhecida",
+                Itens = itens.Select(i => new ItemPedidoDetalhe
+                {
+                    NomeJogo = nomesJogos.GetValueOrDefault(i.IdJogo, "Jogo Removido"),
+                    Quantidade = i.Quantidade,
+                    ValorUnitario = i.ValorUnitario
+                }).ToList()
+            };
+            
+            resultado.Add(detalhe);
+        }
+
+        return resultado;
+    }
 }

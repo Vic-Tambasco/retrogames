@@ -36,4 +36,28 @@ public class PedidoController : ControllerBase
 
         return Ok(new RetroGamesResponseApiModel<object>(new { idPedido = pedido.Id, total = pedido.Total }));
     }
+
+        [HttpGet("meus")]
+    public async Task<ActionResult<RetroGamesResponseApiModel<IEnumerable<object>>>> MeusPedidos()
+    {
+        var idUsuario = _usuarioAtual.ObterId();
+        var pedidos = await _pedidoService.ListarMeusPedidosAsync(idUsuario);
+
+        // Mapeia para um formato que o front entende
+        var response = pedidos.Select(p => new
+        {
+            Id = p.Pedido.Id,
+            Data = p.Pedido.DataPedido,
+            Total = p.Pedido.Total,
+            Situacao = p.DescricaoSituacao,
+            Itens = p.Itens.Select(i => new
+            {
+                NomeJogo = i.NomeJogo,
+                Quantidade = i.Quantidade,
+                ValorUnitario = i.ValorUnitario
+            })
+        });
+
+        return Ok(new RetroGamesResponseApiModel<IEnumerable<object>>(response));
+    }
 }
